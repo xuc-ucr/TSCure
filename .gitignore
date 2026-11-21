@@ -1,0 +1,13 @@
+/doc/
+/Meta/
+.DS_Store
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+*.Rcheck/
+*.tar.gz
+*.rds
+*.RDS
+man_backup/
+NAMESPACE_backup.txt

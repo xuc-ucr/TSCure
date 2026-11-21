@@ -1,0 +1,19 @@
+Package: TSCure
+Title: Semiparametric Transformation Mixture Cure Models for Case-Cohort Studies
+Version: 0.1.0
+Authors@R: c(person('Xu', 'Cao', role = c('aut', 'cre'), email = 'xuc@ucr.edu'), person('Qingning', 'Zhou', role = 'aut'))
+Description: Implements inverse probability weighted estimation and
+    efficiency-improved estimation for semiparametric transformation
+    mixture cure models under generalized case-cohort sampling.
+    Provides simulation tools, weighted bootstrap inference, and
+    model selection using the Akaike information criterion.
+    The methodology is described in "Improving Estimation Efficiency
+    for Case-cohort Studies with a Cure Fraction".
+License: MIT + file LICENSE
+Encoding: UTF-8
+Depends: R (>= 4.1.0)
+Imports: splines2, stats,  utils
+Suggests: survival, testthat (>= 3.0.0), knitr, rmarkdown
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+RoxygenNote: 7.2.3

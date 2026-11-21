@@ -1,0 +1,142 @@
+---
+title: "Introduction to TSCure"
+author: "Xu Cao and Qingning Zhou"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to TSCure}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+# Overview
+
+`TSCure` implements semiparametric transformation mixture cure models for generalized case-cohort studies. It provides inverse-probability weighted (IPW) estimation, an auxiliary-variable-based two-step update, multiplier bootstrap inference, and AIC-based selection of the transformation parameter and spline complexity.
+
+The incidence component models the probability of being **uncured**; the latency component models event times among uncured individuals. The logarithmic transformation parameter **r = 0** corresponds to proportional hazards (PH), while **r = 1** corresponds to proportional odds (PO).
+
+```{r}
+library(TSCure)
+```
+
+# Generate case-cohort data
+
+The simulation generator returns the latent cure indicator `A`, failure time `T`, censoring time `C`, observed time `Y`, event indicator `D`, expensive covariate `U`, inexpensive covariate `Z`, phase-selection indicators `Ind1` and `Ind2`, and auxiliary variable `U_a`.
+
+```{r simulate}
+d <- tscure_simulate(n = 500, r = 0, q1 = 0.2, q2 = 0.5,
+                     error_sd = 0.8, seed = 527)
+dim(d)
+head(d[, c("Y", "D", "U", "Z", "Ind1", "Ind2", "U_a")])
+mean(d$A == 0) # Simulated cure fraction
+```
+
+In real-world datasets, latent `A` and uncensored `T` need not be observed. The fitting function uses observed time, event status, covariates, and the sampling design.
+
+# Calculate sampling weights
+
+```{r weights}
+w <- tscure_weights(d$D, d$Ind1, d$Ind2, q1 = 0.2, q2 = 0.5)
+summary(w)
+```
+
+Unselected observations receive weight zero. Cases have inclusion probability `q1 + (1 - q1) * q2`; noncases have inclusion probability `q1`.
+
+# Fit a PH mixture cure model
+
+The following small fit omits bootstrap inference to keep the vignette quick to build. `update = FALSE` fits only the original IPW estimator.
+
+```{r ph-fit}
+fit_ph <- tscure_fit(
+  data = d,
+  time = "Y", status = "D",
+  expensive = "U", auxiliary = "U_a", covariates = "Z",
+  ind1 = "Ind1", ind2 = "Ind2", q1 = 0.2, q2 = 0.5,
+  r = 0, n_knots = 1, degree = 1,
+  nboot = 0, update = FALSE
+)
+coef(fit_ph)
+fit_ph$convergence
+```
+
+The coefficient names beginning with `latency:` refer to the event-time model. Names beginning with `incidence:` refer to the logistic probability-of-being-uncured model.
+
+# Updated estimator and bootstrap inference
+
+For practical inference, use the auxiliary variable observed in the full cohort, set `update = TRUE`, and choose a sufficiently large `nboot`. Each bootstrap draw requires multiple EM fits, so the example below is **not executed when the vignette is built**.
+
+```{r update-bootstrap, eval=FALSE}
+fit_updated <- tscure_fit(
+  data = d,
+  expensive = "U", auxiliary = "U_a", covariates = "Z",
+  ind1 = "Ind1", ind2 = "Ind2", q1 = 0.2, q2 = 0.5,
+  r = 0, n_knots = 1, degree = 1,
+  nboot = 200, update = TRUE, seed = 527
+)
+coef(fit_updated)
+coef(fit_updated, updated = TRUE)
+summary(fit_updated)
+summary(fit_updated, updated = TRUE)
+sqrt(diag(vcov(fit_updated, updated = TRUE)))
+fit_updated$bootstrap$n_success
+```
+
+The bootstrap covariance matrix of the working-model differences must be nonsingular. If an update fails because this matrix is singular or poorly conditioned, increase the number of bootstrap draws or reconsider the working model. Small bootstrap counts are unsuitable for reliable inference.
+
+# Fit a PO mixture cure model
+
+Use $r = 1$ for the PO transformation. The following example is optional to keep vignette builds short.
+
+```{r po-fit, eval=FALSE}
+d_po <- tscure_simulate(n = 1000, r = 1, tau = 11, seed = 527)
+fit_po <- tscure_fit(
+  d_po, expensive = "U", auxiliary = "U_a", covariates = "Z",
+  ind1 = "Ind1", ind2 = "Ind2", q1 = 0.2, q2 = 0.5,
+  r = 1, nboot = 0, update = FALSE
+)
+coef(fit_po)
+```
+
+# Select transformation and spline knots by AIC
+
+`tscure_select()` fits the candidate grid without bootstrap and ranks converged fits by weighted AIC. This is also optional during vignette building.
+
+```{r aic, eval=FALSE}
+selection <- tscure_select(
+  data = d,
+  r_grid = c(0, 0.5, 1), knot_grid = 1:3,
+  expensive = "U", auxiliary = "U_a", covariates = "Z",
+  ind1 = "Ind1", ind2 = "Ind2", q1 = 0.2, q2 = 0.5
+)
+selection$table
+selection$selected
+```
+
+# Run a simulation study
+
+The simulation utility compares original and updated estimators across independently generated cohorts. Long-running studies can print progress and save an RDS checkpoint after each completed replication. **The current checkpoint functionality saves results but does not automatically resume a run.**
+
+```{r study, eval=FALSE}
+results <- tscure_study(
+  nsim = 100, n = 2000, nboot = 100, seed = 527,
+  r = 1, tau = 11, q1 = 0.2, q2 = 0.5,
+  error_sd = 0.8, n_knots = 1, degree = 1,
+  checkpoint = "TSCure_PO_checkpoint.rds", progress = TRUE
+)
+saveRDS(results, "TSCure_PO_results.rds")
+table(is.na(results$errors))
+apply(results$original, 2, var) / apply(results$updated, 2, var)
+```
+
+For formal Monte Carlo studies, evaluate bias, empirical standard deviation, mean bootstrap standard error, confidence interval coverage, and relative efficiency. Check failures and convergence before interpreting results. Results need not numerically match published tables when seeds, random-number generation, or replication counts differ.
+
+# Analyze your own data
+
+`tscure_fit()` also accepts appropriately structured observed survival datasets. Supply observed follow-up time, binary event indicator, expensive covariate (observed for sampled individuals), fully observed inexpensive covariates, and either sampling indicators and probabilities or observation weights. An auxiliary variable is optional for the working model. Use `update = FALSE` to fit only the original IPW estimator.
+
+# Reference and validation scope
+
+This vignette illustrates software usage, not an exact replication of the publication's simulation tables. The package's preliminary PH and PO simulation studies have shown efficiency improvements consistent with the associated research, but statistical validation and software checks should be revisited after substantive changes to the estimation code.
