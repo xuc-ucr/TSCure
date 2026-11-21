@@ -111,7 +111,7 @@ selection$selected
 
 ## Simulation validation
 
-Preliminary checks of the development implementation used representative manuscript settings with 100 simulated cohorts and 100 bootstrap replications per cohort, at `n = 2000`. The PH scenario used `r = 0, tau = 4.5`, and the PO scenario used `r = 1, tau = 11`, with `q1 = 0.2`, `q2 = 0.5`, and auxiliary-variable noise SD `0.8`. The updated estimator showed lower empirical variance than the original IPW estimator for all five reported regression parameters in both scenarios. These checks are **not** exact reproductions of the publication's tables, which used more simulation and bootstrap replications. The PH experiment also showed below-nominal coverage for some updated latency coefficients, warranting caution when interpreting finite-sample inference.
+Preliminary checks of the development implementation used representative manuscript settings with 100 simulated cohorts and 100 bootstrap replications per cohort, at `n = 2000`. The PH scenario used `r = 0, tau = 4.5`, and the PO scenario used `r = 1, tau = 11`, with `q1 = 0.2`, `q2 = 0.5`, and auxiliary-variable noise SD `0.8`. The updated estimator showed lower empirical variance than the original IPW estimator for all five reported regression parameters in both scenarios. These checks are not exact reproductions of the publication's tables, which used more simulation and bootstrap replications. The PH experiment also showed below-nominal coverage for some updated latency coefficients, warranting caution when interpreting finite-sample inference.
 
 The development package has passed `R CMD check` with zero errors, warnings, and notes in the maintainer's local R environment. Recheck after any further source or documentation changes.
 
