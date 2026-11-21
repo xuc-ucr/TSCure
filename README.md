@@ -8,15 +8,21 @@ The incidence component models the probability of being **uncured**. The transfo
 
 ## Installation
 
-`TSCure` is currently distributed as a source package. From a local package directory:
+TSCure is available on GitHub. Install the latest development version using:
 
 ```r
 install.packages("remotes")
-remotes::install_local("/path/to/TSCure", dependencies = TRUE)
+remotes::install_github("xuc-ucr/TSCure")
 library(TSCure)
 ```
 
-After the GitHub repository is published, a GitHub installation command can be added here.
+To install the first official release (v0.1.0):
+
+```r
+remotes::install_github("xuc-ucr/TSCure", ref = "v0.1.0")
+```
+
+For documentation, examples, and source code, visit the [TSCure GitHub repository](https://github.com/xuc-ucr/TSCure).
 
 ## Quick start: simulate data and fit a model
 
@@ -68,7 +74,7 @@ The bootstrap can be computationally intensive. For a quick smoke test, use `nbo
 | `tscure_weights()` | Calculate inverse-probability sampling weights |
 | `tscure_fit()` | Fit original IPW and optionally updated estimators |
 | `tscure_select()` | Compare transformation parameters and spline knot counts by AIC |
-| `tscure_study()` | Run repeated simulations; the current development version supports progress reporting and checkpoints |
+| `tscure_study()` | Run repeated simulations with progress reporting and automatic checkpoint saving |
 
 ## Proportional odds model
 
@@ -111,11 +117,25 @@ The development package has passed `R CMD check` with zero errors, warnings, and
 
 ## Reference
 
-Qingning Zhou and Xu Cao. *Improving Estimation Efficiency for Case-cohort Studies with a Cure Fraction*. Biometrics. Please consult the published article for the definitive bibliographic details and theoretical results.
+If you use the TSCure package in your research, please cite:
+
+Zhou, Q. and Cao, X. (2025). *Improving Estimation Efficiency for Case-cohort Studies with a Cure Fraction*. Biometrics. https://doi.org/10.1093/biomtc/ujaf059
+
+## Authors and Maintainer
+
+**Package authors:** Xu Cao and Qingning Zhou
+
+**Maintainer:** Xu Cao (xuc@ucr.edu).
 
 ## Development status
 
-Version `0.1.0` is an initial research-software release candidate. Users should inspect convergence diagnostics and assess performance under their own sampling and censoring settings. Exact numerical agreement with the published simulation tables is not claimed.
+## Development Status
+
+Version `0.1.0` is the first public release of TSCure. The package implements the statistical methodology described in Zhou and Cao (2025).
+
+Preliminary simulation studies under proportional hazards and proportional odds settings demonstrate estimation performance broadly consistent with the published findings. Exact numerical reproduction of the published simulation tables is not claimed.
+
+Users are encouraged to inspect convergence diagnostics and assess model performance under their specific sampling and censoring settings.
 
 ## License
 
