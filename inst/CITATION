@@ -1,0 +1,22 @@
+citHeader("To cite the methodology implemented in TSCure, use:")
+
+bibentry(
+  bibtype = "Article",
+  title = "Improving Estimation Efficiency for Case-cohort Studies with a Cure Fraction",
+  author = c(person("Qingning", "Zhou"), person("Xu", "Cao")),
+  journal = "Biometrics",
+  year = "2025",
+  doi = "10.1093/biomtc/ujaf059",
+  url = "https://doi.org/10.1093/biomtc/ujaf059"
+)
+
+citHeader("To cite the TSCure R package, use:")
+
+bibentry(
+  bibtype = "Manual",
+  title = "TSCure: Two-Step Estimation for Case-Cohort Studies with a Cure Fraction",
+  author = c(person("Xu", "Cao"), person("Qingning", "Zhou")),
+  year = "2026",
+  note = "R package version 0.1.0",
+  url = "https://github.com/xuc-ucr/TSCure"
+)
