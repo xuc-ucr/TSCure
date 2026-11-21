@@ -1,19 +1,35 @@
+
 Package: TSCure
-Title: Semiparametric Transformation Mixture Cure Models for Case-Cohort Studies
+Title: Two-Step Estimation for Case-Cohort Studies with a Cure Fraction
 Version: 0.1.0
-Authors@R: c(person('Xu', 'Cao', role = c('aut', 'cre'), email = 'xuc@ucr.edu'), person('Qingning', 'Zhou', role = 'aut'))
-Description: Implements inverse probability weighted estimation and
-    efficiency-improved estimation for semiparametric transformation
-    mixture cure models under generalized case-cohort sampling.
-    Provides simulation tools, weighted bootstrap inference, and
-    model selection using the Akaike information criterion.
-    The methodology is described in "Improving Estimation Efficiency
-    for Case-cohort Studies with a Cure Fraction".
+Authors@R: c(
+    person("Xu", "Cao",
+           role = c("aut", "cre"),
+           email = "xuc@ucr.edu"),
+    person("Qingning", "Zhou",
+           role = "aut")
+    )
+Description: Implements semiparametric transformation mixture cure models
+    under generalized case-cohort sampling using inverse probability
+    weighted sieve likelihood and an EM algorithm. Provides an
+    efficiency-improved estimator incorporating auxiliary covariate
+    information, multiplier bootstrap inference, AIC-based model
+    selection, and simulation utilities. The methodology is developed
+    in Zhou and Cao (2025), "Improving Estimation Efficiency for
+    Case-cohort Studies with a Cure Fraction",
+    <doi:10.1093/biomtc/ujaf059>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Depends: R (>= 4.1.0)
-Imports: splines2, stats,  utils
-Suggests: survival, testthat (>= 3.0.0), knitr, rmarkdown
+Imports:
+    splines2,
+    stats,
+    utils
+Suggests:
+    survival,
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 RoxygenNote: 7.2.3
